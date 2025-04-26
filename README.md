@@ -1,4 +1,3 @@
-```markdown
 # Sistema Integral de Monitoreo de Servidores con Docker Compose
 
 Este proyecto despliega un stack completo para monitoreo y gestión de servidores y contenedores basado en Docker Compose. Incluye herramientas clave como **Node Exporter**, **cAdvisor**, **Prometheus**, **Grafana** y **Portainer**, que juntas permiten obtener métricas detalladas del sistema, contenedores y gestionar la infraestructura de manera visual y centralizada.
