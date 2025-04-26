@@ -1,0 +1,65 @@
+services:
+  # Node Exporter para métricas del host
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    ports:
+      - "9100:9100"
+    volumes:
+      - "/:/host:ro,rslave"  # Acceso RO al filesystem del host[4][5]
+    command: 
+      - '--path.rootfs=/host'  # Necesario para monitorizar el host desde contenedor[4][5]
+    pid: host  # Comparte namespace de procesos con el host[5]
+
+  # cAdvisor para métricas de contenedores
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:rw"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"  # Acceso a Docker daemon[6]
+
+  # Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      # - '--web.config.file=/etc/prometheus/web.yml' por si le queremos agregar autenticacion al servidor prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./web.yml:/etc/prometheus/web.yml
+
+  # Grafana: los mejores dashboards son para node exporter el 1860 y para cAdvisor el 19908
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - portainer-data:/data
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 9000:9000
+
+volumes:
+  portainer-data:
+  grafana-data:
