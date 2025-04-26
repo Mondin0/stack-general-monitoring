@@ -102,7 +102,6 @@ Este proyecto despliega un stack completo para monitoreo y gestión de servidore
 ---
 
 ¡Con este stack tendrás un sistema robusto y completo para monitorear y gestionar tus servidores y contenedores Docker fácilmente!
-```
 
 ---
 
