@@ -7,9 +7,14 @@ services:
     ports:
       - "9100:9100"
     volumes:
-      - "/:/host:ro,rslave"  # Acceso RO al filesystem del host[4][5]
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
     command: 
-      - '--path.rootfs=/host'  # Necesario para monitorizar el host desde contenedor[4][5]
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     pid: host  # Comparte namespace de procesos con el host[5]
 
   # cAdvisor para métricas de contenedores
